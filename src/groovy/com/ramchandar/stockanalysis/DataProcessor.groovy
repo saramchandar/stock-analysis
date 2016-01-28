@@ -3,11 +3,11 @@ package com.ramchandar.stockanalysis
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class AddToDB {
+class DataProcessor {
 
     def DAO dao
 
-    AddToDB() {
+    DataProcessor() {
         dao = new DAO()
     }
 
@@ -35,7 +35,19 @@ class AddToDB {
         println "Successfully inserted $rows rows"
     }
 
-    public static void main(String[] args) {
-        new AddToDB().processFile("C:\\Misc\\Prices.txt")
+    def size() {
+        def count = dao.size()
+        println "Size of DB: $count"
+    }
+
+    def list() {
+        def prices = dao.list(10)
+        prices.each {
+            println it
+        }
+    }
+
+    def truncate() {
+        dao.truncate()
     }
 }

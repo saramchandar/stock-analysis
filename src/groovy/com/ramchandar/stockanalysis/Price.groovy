@@ -14,5 +14,5 @@ class Price {
     def Double high
     def Double low
     def Double close
-    def Double volume
+    def Long volume
 }
