@@ -36,6 +36,6 @@ class AddToDB {
     }
 
     public static void main(String[] args) {
-        new AddToDB().processFile("C:\\Users\\S. A. Ramchandar\\Documents\\Prices.txt")
+        new AddToDB().processFile("C:\\Misc\\Prices.txt")
     }
 }
