@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 class Runner {
 
-    def static Integer LOAD = 1
+    def static LOAD = 1
     def static SHOW_DB = 2
     def static LIST_FEW = 3
     def static TRUNCATE = 4
