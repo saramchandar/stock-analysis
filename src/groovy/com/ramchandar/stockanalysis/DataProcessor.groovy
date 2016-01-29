@@ -1,6 +1,7 @@
 package com.ramchandar.stockanalysis
 
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class DataProcessor {
@@ -17,16 +18,22 @@ class DataProcessor {
             if (lineNo != 1) {
                 def values = line.split(Constants.FIELD_SEPARATOR)
 
-                def price = new Price(
-                        name: values[Constants.STOCK],
-                        priceDate: LocalDate.parse(values[Constants.PRICE_DATE], DateTimeFormatter.ofPattern(Constants.DATE_FORMAT)),
-                        open: new Double(values[Constants.OPEN_PRICE].trim()),
-                        high: new Double(values[Constants.HIGH_PRICE].trim()),
-                        low: new Double(values[Constants.LOW_PRICE].trim()),
-                        close: new Double(values[Constants.CLOSE_PRICE].trim())
-                )
+                try {
+                    def price = new Price(
+                            name: values[Constants.STOCK],
+                            priceDate: LocalDate.parse(values[Constants.PRICE_DATE], DateTimeFormatter.ofPattern(Constants.DATE_FORMAT)),
+                            time: LocalTime.parse(values[Constants.PRICE_TIME]),
+                            open: new Double(values[Constants.OPEN_PRICE].trim()),
+                            high: new Double(values[Constants.HIGH_PRICE].trim()),
+                            low: new Double(values[Constants.LOW_PRICE].trim()),
+                            close: new Double(values[Constants.CLOSE_PRICE].trim())
+                    )
 
-                prices += price
+                    prices += price
+                }catch (Exception e) {
+                    println "Exception at $lineNo $e"
+                    throw e
+                }
             }
         }
 

@@ -3,9 +3,6 @@ package com.ramchandar.stockanalysis
 import groovy.sql.Sql
 import org.apache.commons.lang3.Validate
 
-import java.time.LocalDate
-import java.time.ZoneId
-
 class DAO {
 
     def Sql sql
@@ -19,8 +16,8 @@ class DAO {
         Validate.noNullElements(prices)
 
         prices.each {
-            sql.execute("insert into NSEFUTURES (Name, Date, Open, High, Low, Close, Volume) values (?, ?, ?, ?, ?, ?, ?)",
-                    it.name, java.sql.Date.valueOf(it.priceDate), it.open, it.high, it.low, it.close, it.volume)
+            sql.execute("insert into NSEFUTURES (name, date, time, open, high, low, close, volume) values (?, ?, ?, ?, ?, ?, ?, ?)",
+                    it.name, java.sql.Date.valueOf(it.priceDate), java.sql.Time.valueOf(it.time), it.open, it.high, it.low, it.close, it.volume)
         }
 
         prices.size()
@@ -32,15 +29,16 @@ class DAO {
 
     def list(Integer rowCount) {
         def prices = []
-        sql.eachRow("select Name, Date, Open, High, Low, Close, Volume from NSEFUTURES") {
+        sql.eachRow("select name, date, time, open, high, low, close, volume from NSEFUTURES") {
             def price = new Price(
-                    name: it.Name,
-                    priceDate: it.Date.toLocalDate(),
-                    open: it.Open as Double,
-                    high: it.High as Double,
-                    low: it.Low as Double,
-                    close: it.Close as Double,
-                    volume: it.Volume as Long
+                    name: it.name,
+                    priceDate: it.date.toLocalDate(),
+                    time: it.time.toLocalTime(),
+                    open: it.open as Double,
+                    high: it.high as Double,
+                    low: it.low as Double,
+                    close: it.close as Double,
+                    volume: it.volume as Long
             )
             prices += price
         }
