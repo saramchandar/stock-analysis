@@ -1,0 +1,21 @@
+DROP TABLE NSEFUTURES;
+
+CREATE TABLE public.nsefutures
+(
+  name character varying(20),
+  date date,
+  time time,
+  open numeric(7,2),
+  high numeric(7,2),
+  low numeric(7,2),
+  close numeric(7,2),
+  volume integer,
+  OI numeric(10,2),
+  created_uid character varying(20) DEFAULT 'postgres'::character varying,
+  created_ts timestamp without time zone DEFAULT now()
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.nsefutures
+  OWNER TO postgres;
