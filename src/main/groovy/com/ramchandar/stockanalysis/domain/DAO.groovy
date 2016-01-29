@@ -32,22 +32,26 @@ class DAO {
         sql.firstRow("select count(*) as total_count from NSEFUTURES").total_count
     }
 
-    def list(Integer rowCount) {
+    private List<Price> query(String query) {
         def prices = []
-        sql.eachRow("select name, date, time, open, high, low, close, volume from NSEFUTURES limit $rowCount") {
-            def price = new Price(
-                    name: it.name,
-                    priceDate: it.date.toLocalDate(),
-                    time: it.time.toLocalTime(),
-                    open: it.open as Double,
-                    high: it.high as Double,
-                    low: it.low as Double,
-                    close: it.close as Double,
-                    volume: it.volume as Long
-            )
-            prices += price
+        sql.eachRow(query) {
+            prices += Price.rowMapperClosure(it)
         }
         prices
+    }
+
+    def list(Integer rowCount) {
+        def queryString = "select name, date, time, open, high, low, close, volume from NSEFUTURES limit $rowCount"
+        LOG.debug("Query for List: $queryString")
+        queryString(queryString)
+    }
+
+    List<Price> getPrices(String stock, LocalDate date) {
+        def queryString = "select name, date, time, open, high, low, close, volume " +
+                "from NSEFUTURES " +
+                "where name = '$stock' and date = '$date'"
+        LOG.debug("Query for getPrices: $queryString")
+        query(queryString)
     }
 
     def truncate() {

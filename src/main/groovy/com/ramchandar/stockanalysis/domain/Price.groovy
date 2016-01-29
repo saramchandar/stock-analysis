@@ -17,4 +17,17 @@ class Price {
     def Double low
     def Double close
     def Long volume
+
+    def static Price rowMapperClosure(def it) {
+        new Price(
+                name: it.name,
+                priceDate: it.date.toLocalDate(),
+                time: it.time.toLocalTime(),
+                open: it.open as Double,
+                high: it.high as Double,
+                low: it.low as Double,
+                close: it.close as Double,
+                volume: it.volume as Long
+        )
+    }
 }
