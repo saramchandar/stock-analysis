@@ -1,4 +1,4 @@
-package com.ramchandar.stockanalysis
+package com.ramchandar.stockanalysis.domain
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString

@@ -1,10 +1,16 @@
 package com.ramchandar.stockanalysis
 
+import com.ramchandar.stockanalysis.domain.DAO
+import com.ramchandar.stockanalysis.domain.Price
+import org.apache.log4j.Logger
+
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class DataProcessor {
+
+    def static LOG = Logger.getLogger(DataProcessor.class)
 
     def DAO dao
 
@@ -31,7 +37,7 @@ class DataProcessor {
 
                     prices += price
                 }catch (Exception e) {
-                    println "Exception at $lineNo $e"
+                    LOG.error("Exception at $lineNo", e)
                     throw e
                 }
             }
@@ -39,22 +45,23 @@ class DataProcessor {
 
         def rows = dao.insert(prices)
 
-        println "Successfully inserted $rows rows"
+        LOG.info("Successfully inserted $rows rows")
     }
 
     def size() {
         def count = dao.size()
-        println "Size of DB: $count"
+        LOG.info("Size of DB: $count")
     }
 
     def list() {
         def prices = dao.list(10)
         prices.each {
-            println it
+            LOG.info(it)
         }
     }
 
     def truncate() {
         dao.truncate()
+        LOG.info("Successfully truncated table")
     }
 }

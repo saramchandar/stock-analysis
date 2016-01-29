@@ -1,9 +1,14 @@
-package com.ramchandar.stockanalysis
+package com.ramchandar.stockanalysis.domain
 
 import groovy.sql.Sql
 import org.apache.commons.lang3.Validate
+import org.apache.log4j.Logger
+
+import java.time.LocalDate
 
 class DAO {
+
+    def static LOG = Logger.getLogger(DAO.class)
 
     def Sql sql
 
@@ -29,7 +34,7 @@ class DAO {
 
     def list(Integer rowCount) {
         def prices = []
-        sql.eachRow("select name, date, time, open, high, low, close, volume from NSEFUTURES") {
+        sql.eachRow("select name, date, time, open, high, low, close, volume from NSEFUTURES limit $rowCount") {
             def price = new Price(
                     name: it.name,
                     priceDate: it.date.toLocalDate(),
@@ -47,5 +52,19 @@ class DAO {
 
     def truncate() {
         sql.execute("truncate table NSEFUTURES")
+    }
+
+    def List getMinMaxForFirstHalfHour(String stock, LocalDate date) {
+        def query = "select min(high) as min, max(high) as max " +
+                "from nsefutures " +
+                "where time > '09:15' and time <= '09:44' " +
+                "and date = '$date' and name = '$stock'"
+        LOG.debug(query)
+        def min, max
+        sql.eachRow(query) {
+            min = it.min
+            max = it.max
+        }
+        [min, max]
     }
 }
