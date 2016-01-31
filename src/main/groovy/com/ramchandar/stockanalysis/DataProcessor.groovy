@@ -32,7 +32,9 @@ class DataProcessor {
                             open: new Double(values[Constants.OPEN_PRICE].trim()),
                             high: new Double(values[Constants.HIGH_PRICE].trim()),
                             low: new Double(values[Constants.LOW_PRICE].trim()),
-                            close: new Double(values[Constants.CLOSE_PRICE].trim())
+                            close: new Double(values[Constants.CLOSE_PRICE].trim()),
+                            volume: new Double(values[Constants.VOLUME_PRICE].trim()),
+                            oi: new Double(values[Constants.OI_PRICE].trim())
                     )
 
                     prices += price

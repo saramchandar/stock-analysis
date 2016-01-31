@@ -8,7 +8,9 @@ class Constants {
                        OPEN_PRICE = 3,
                        HIGH_PRICE = 4,
                        LOW_PRICE = 5,
-                       CLOSE_PRICE = 6
+                       CLOSE_PRICE = 6,
+                       VOLUME_PRICE = 7,
+                       OI_PRICE = 8
     def static String DATE_FORMAT = "yyyyMMdd"
     def static String TIME_FORMAT = "hh:mm"
 }

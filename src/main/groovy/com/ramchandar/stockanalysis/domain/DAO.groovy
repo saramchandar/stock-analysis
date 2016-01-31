@@ -41,13 +41,13 @@ class DAO {
     }
 
     def list(Integer rowCount) {
-        def queryString = "select name, date, time, open, high, low, close, volume from NSEFUTURES limit $rowCount"
+        def queryString = "select name, date, time, open, high, low, close, volume, oi from NSEFUTURES limit $rowCount"
         LOG.debug("Query for List: $queryString")
         query(queryString)
     }
 
     List<Price> getPrices(String stock, LocalDate date) {
-        def queryString = "select name, date, time, open, high, low, close, volume " +
+        def queryString = "select name, date, time, open, high, low, close, volume, oi " +
                 "from NSEFUTURES " +
                 "where name = '$stock' and date = '$date'"
         LOG.debug("Query for getPrices: $queryString")

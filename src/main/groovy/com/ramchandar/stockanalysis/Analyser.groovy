@@ -19,12 +19,16 @@ class Analyser {
     def void process(String stock, LocalDate date) {
         LOG.info("Processing for $stock and $date")
         def minMax = dao.getMinMaxForFirstHalfHour(stock, date)
-        LOG.info("Min is ${minMax[0]} Max is ${minMax[1]}")
+        def min = minMax[0]
+        def max = minMax[1]
+        LOG.info("Min is ${min} Max is ${max}")
 
-        List<Price> prices = dao.getPrices(stock, date)
+        List<Price> allPrices = dao.getPrices(stock, date)
 
-        prices.each {
-            LOG.info(it)
+        for(int i = 0; i < allPrices.size(); i++){
+            def singlePrice = allPrices[i]
+            println singlePrice
         }
+
     }
 }

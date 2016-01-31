@@ -17,6 +17,7 @@ class Price {
     def Double low
     def Double close
     def Long volume
+    def Double oi
 
     def static Price rowMapperClosure(def it) {
         new Price(
@@ -27,7 +28,8 @@ class Price {
                 high: it.high as Double,
                 low: it.low as Double,
                 close: it.close as Double,
-                volume: it.volume as Long
+                volume: it.volume as Long,
+                oi: it.oi as Double
         )
     }
 }
