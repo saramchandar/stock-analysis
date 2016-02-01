@@ -2,6 +2,7 @@ package com.ramchandar.stockanalysis
 
 import com.ramchandar.stockanalysis.domain.DAO
 import com.ramchandar.stockanalysis.domain.Price
+import groovy.sql.Sql
 import org.apache.log4j.Logger
 
 import java.time.LocalDate
@@ -16,9 +17,14 @@ class Analyser {
     Analyser() {
         dao = new DAO()
     }
+    def static sql = Sql.newInstance("jdbc:postgresql://localhost:5432/NSEFUTURES", "postgres", "abc123", "org.postgresql.Driver")
 
     public static void main(String[] args) {
-        new Analyser().process("BANKNIFTY_F1", LocalDate.parse("2015-04-01"))
+        def Analyser analyser = new Analyser()
+        sql.eachRow("select distinct name, date from nsefutures") {
+            println "Processing $it.name and $it.date"
+            analyser.process(it.name as String , LocalDate.parse(it.date as String))
+        }
     }
 
     def void process(String stock, LocalDate date) {
@@ -34,6 +40,8 @@ class Analyser {
         def longtarget = 0
         def longsaletime
         def longsaleprice = 0
+        def String remark
+        def PandL = 0
         for (int i = 0; i < allPrices.size(); i++) {
             def singlePrice = allPrices[i]
             if (singlePrice.high > max && singlePrice.time > LocalTime.parse("09:44")) {
@@ -41,7 +49,8 @@ class Analyser {
                 if (longbuyprice + 1 > max) {
                     longbuyprice = max + 1
                     longbuytime = singlePrice.time
-                    longtarget = longbuyprice + 40
+                    longtarget = longbuyprice + (1000/(500000/longbuyprice))
+                    println "Target : $longtarget"
                     println "Buy Time : $longbuytime, Buy Prince : $longbuyprice Target amount : $longtarget"
                     break
                 }
@@ -57,6 +66,12 @@ class Analyser {
                     longsaletime = singlePrice.time
                     longsaleprice = singlePrice.high
                     println "Sale Time : $longsaletime, Sale Price : $longsaleprice"
+                    remark = "Long Trade OK"
+                    PandL = longsaleprice - longbuyprice
+                    sql.execute("insert into NSETRADEBOOK (name, BUY_date, BUY_time, BUY_PRICE, SALE_DATE, SALE_TIME, SALE_PRICE, REMARK, PandL) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            singlePrice.name, java.sql.Date.valueOf(singlePrice.priceDate), java.sql.Time.valueOf(longbuytime), longbuyprice,
+                            java.sql.Date.valueOf(singlePrice.priceDate), java.sql.Time.valueOf(longsaletime), longsaleprice, remark, PandL
+                    )
                     break
                 }
 
@@ -68,10 +83,11 @@ class Analyser {
         println "Sort Chances"
 
         // Sort chances
-        def sortbuytime, sortbuyprice, sorttarget, sortsaletime, sortsaleprice
+        def sortbuytime, sortbuyprice, sorttarget, sortsaletime, sortsaleprice, sPandL
         sortbuyprice = 0
         sorttarget = 0
         sortsaleprice = 0
+        sPandL =0
 
         for (int i = 0; i < allPrices.size(); i++) {
             def singlePrice = allPrices[i]
@@ -93,10 +109,16 @@ class Analyser {
                 if (singlePrice.low < sorttarget && singlePrice.time > sortsaletime){
                     sortbuytime = singlePrice.time
                     sortbuyprice = singlePrice.low
+                    sPandL = sortsaleprice - sortbuyprice
                 }
             }
             if (sortbuyprice != 0){
                 println "Sort Buy time : $sortbuytime, Sort Buy Price : $sortbuyprice"
+                remark = "Sort Trade Ok"
+                sql.execute("insert into NSETRADEBOOK (name, BUY_date, BUY_time, BUY_PRICE, SALE_DATE, SALE_TIME, SALE_PRICE, REMARK, PandL) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        stock, java.sql.Date.valueOf(date), java.sql.Time.valueOf(sortbuytime), sortbuyprice,
+                        java.sql.Date.valueOf(date), java.sql.Time.valueOf(sortsaletime), sortsaleprice, remark, sPandL
+                )
             }
             else {
                 println "Sort Buy Not Possible"
