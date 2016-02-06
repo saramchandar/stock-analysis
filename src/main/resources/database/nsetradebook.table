@@ -1,0 +1,21 @@
+-- Table: public.nsetradebook
+
+-- DROP TABLE public.nsetradebook;
+
+CREATE TABLE public.nsetradebook
+(
+  name character varying(20),
+  buy_date date,
+  buy_time time without time zone,
+  sale_date date,
+  sale_time time without time zone,
+  buy_price numeric(7,2),
+  sale_price numeric(7,2),
+  remark character varying(50),
+  pandl numeric
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.nsetradebook
+  OWNER TO postgres;
