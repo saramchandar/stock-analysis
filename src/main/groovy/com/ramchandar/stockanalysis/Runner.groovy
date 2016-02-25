@@ -1,5 +1,7 @@
 package com.ramchandar.stockanalysis
 
+import groovy.sql.Sql
+
 import java.time.LocalDate
 
 class Runner {
@@ -9,7 +11,11 @@ class Runner {
     def static LIST_FEW = 3
     def static TRUNCATE = 4
     def static ANALYSE = 5
-    def static EXIT = 6
+    def static ADDLOTS = 6
+    def static MODIFY_LOT = 7
+    def static DELETE_LOT = 8
+    def static EXIT = 9
+    def static sql = Sql.newInstance("jdbc:postgresql://localhost:5432/NSEFUTURES", "postgres", "abc123", "org.postgresql.Driver")
 
     public static void main(String[] args) {
 
@@ -23,7 +29,10 @@ Choose operation
 3. List first few rows from DB
 4. Truncate entries in DB
 5. Analyse
-6. Exit
+6. ADD LOT
+7. MODIFY LOT
+8. DELETE LOT
+9. Exit
 >>
 """
             BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
@@ -36,6 +45,15 @@ Choose operation
                     new DataProcessor().processFile(fileName)
                     break
                 case SHOW_DB:
+                    def m_name = 'ACC_F1'
+                    def query = "select  lot from nselots where name =  $m_name"
+
+                    def s_lot
+                    sql.eachRow(query) {
+                        s_lot = it.lot
+                    }
+
+                    println s_lot
                     new DataProcessor().size()
                     break
                 case LIST_FEW:
@@ -50,6 +68,28 @@ Choose operation
                     print "Please enter the date (yyyy-mm-dd): "
                     def date = bufferRead.readLine()
                     new Analyser().process(stock, LocalDate.parse(date))
+                    break
+                case ADDLOTS:
+                    println "Enter Script Name :"
+                    def m_name = bufferRead.readLine()
+                    println "Enter Lot size :"
+                    def  m_lot  = bufferRead.readLine()
+                    int n_lot = m_lot.toInteger()
+                    println n_lot
+                    sql.execute("insert into nselots (name, lot) values (?, ?)", m_name, n_lot)
+                    break
+                case MODIFY_LOT:
+                    println "Enter Script Name"
+                    def n_name = bufferRead.readLine()
+                    println "Enter Lot size :"
+                    def  m_lot  = bufferRead.readLine()
+                    int n_lot = m_lot.toInteger()
+                    sql.execute("UPDATE nselots SET lot = ? where name = ?", [n_lot, n_name])
+                    break
+                case DELETE_LOT:
+                    println "Enter Script Name"
+                    def n_name = bufferRead.readLine()
+                    sql.execute("DELETE from nselots where name = ?", [n_name])
                     break
                 case EXIT:
                     println "Exiting"
