@@ -24,7 +24,7 @@ class Analyser {
 
         sql.execute("truncate table nsetradebook")
 
-        sql.eachRow("select distinct name, date from nsefutures where date = '2016-02-23' ") {
+        sql.eachRow("select distinct name, date from nsefutures where date = '2016-02-24' ") {
             LOG.info("Processing $it.name and $it.date ")
             Analyser.process(it.name as String, LocalDate.parse(it.date as String))
 
@@ -32,37 +32,18 @@ class Analyser {
     }
 
     def void process(String stock, LocalDate date) {
-        // LOG.info("Processing for $stock and $date")
-        // def minMax = dao.getMinMaxForFirstHalfHour(stock, date)
-        // def min = minMax[0]
-        // def max = minMax[1]
-        // LOG.info("Min is ${min} Max is ${max}")
-        def m_max = 0
-        def m_min = 0
+         //LOG.info("Processing for $stock and $date")
+         def minMax = dao.getMinMaxForFirstHalfHour(stock, date)
+         def m_min = minMax[0]
+         def m_max = minMax[1]
+         LOG.info("Min is ${m_min} Max is ${m_max}")
+
         def m_hour = 0
         def m_minute =0
+
+
         List<Price> allPrices = dao.getPrices(stock, date)
 
-         for (int i = 0; i < allPrices.size(); i++) { // FOR NEXT I BEGIN
-            def singlePrice = allPrices[i]
-
-
-             if (m_max == 0 && m_min== 0){
-                 m_max = singlePrice.high
-                 m_min = singlePrice.low
-                // println "max $m_max, min : $m_min"
-             }
-             if (m_max < singlePrice.high){
-                 m_max = singlePrice.high
-             }
-             if (m_min > singlePrice.low){
-                 m_min = singlePrice.low
-             }
-             if (singlePrice.time == LocalTime.parse("09:40")) {
-                 break
-             }
-        } // FOR NEXT I ENDS
-             println "Max : $m_max, Min : $m_min"
         println ' Type III starts'
         def typeIIItrade = 'N'
         def typeIIItradetime = LocalTime.parse('00:00')

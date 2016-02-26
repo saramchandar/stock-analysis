@@ -59,9 +59,9 @@ class DAO {
     }
 
     def List getMinMaxForFirstHalfHour(String stock, LocalDate date) {
-        def query = "select min(high) as min, max(high) as max " +
+        def query = "select min(low) as min, max(high) as max " +
                 "from nsefutures " +
-                "where time > '09:15' and time <= '09:44' " +
+                "where time >= '09:15' and time <= '09:44' " +
                 "and date = '$date' and name = '$stock'"
         LOG.debug(query)
         def min, max
